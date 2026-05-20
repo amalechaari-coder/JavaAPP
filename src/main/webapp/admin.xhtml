@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="primefaces">
+<h:head>
+    <title>QueueCare - Admin</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+<h:body styleClass="app-body">
+    <div class="page-shell">
+        <div class="hero-card">
+            <div>
+                <h1>Espace admin</h1>
+                <p>Ajoute des patients, appelle le suivant et gere la file du jour.</p>
+            </div>
+            <p:button value="Retour accueil" outcome="index.xhtml" styleClass="secondary-button"/>
+        </div>
+
+        <h:form id="adminForm">
+            <p:growl id="messages" showDetail="true" life="4000"/>
+
+            <p:panel header="Gestion du cabinet" styleClass="content-panel">
+                <div class="grid-two">
+                    <div class="field-block">
+                        <label for="cabinet">Cabinet</label>
+                        <p:selectOneMenu id="cabinet" value="#{adminBean.selectedCabinet}" styleClass="full-width">
+                            <f:selectItems value="#{adminBean.cabinets}" var="cabinet"
+                                           itemLabel="#{cabinet.name}" itemValue="#{cabinet.name}"/>
+                            <p:ajax listener="#{adminBean.onCabinetChange}" update="adminForm"/>
+                        </p:selectOneMenu>
+                    </div>
+
+                    <div class="field-block">
+                        <label for="newPatient">Ajouter un patient</label>
+                        <p:inputText id="newPatient" value="#{adminBean.newPatientName}" styleClass="full-width"/>
+                    </div>
+                </div>
+
+                <div class="action-row">
+                    <p:commandButton value="Ajouter patient"
+                                     action="#{adminBean.addPatient}"
+                                     update="adminForm"
+                                     icon="pi pi-user-plus"/>
+                    <p:commandButton value="Suivant"
+                                     action="#{adminBean.callNext}"
+                                     update="adminForm"
+                                     icon="pi pi-step-forward"/>
+                    <p:commandButton value="Reinitialiser"
+                                     action="#{adminBean.resetQueue}"
+                                     update="adminForm"
+                                     icon="pi pi-refresh"
+                                     styleClass="secondary-button"/>
+                </div>
+            </p:panel>
+
+            <p:panel header="Numero actuel" styleClass="content-panel">
+                <div class="ticket-box current-box">
+                    <span class="ticket-label">Ticket en cours</span>
+                    <strong>
+                        <h:outputText value="#{empty adminBean.currentTicket ? 'Aucun' : adminBean.currentTicket.number}"/>
+                    </strong>
+                </div>
+            </p:panel>
+
+            <p:panel header="Liste d'attente" styleClass="content-panel">
+                <p:dataTable value="#{adminBean.waitingTickets}" var="ticket" emptyMessage="Aucun patient en attente.">
+                    <p:column headerText="Numero">
+                        <h:outputText value="#{ticket.number}"/>
+                    </p:column>
+                    <p:column headerText="Patient">
+                        <h:outputText value="#{ticket.patientName}"/>
+                    </p:column>
+                    <p:column headerText="Avant lui">
+                        <h:outputText value="#{ticket.patientsAhead}"/>
+                    </p:column>
+                    <p:column headerText="Heure">
+                        <h:outputText value="#{ticket.formattedCreatedAt}"/>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+        </h:form>
+    </div>
+</h:body>
+</html>

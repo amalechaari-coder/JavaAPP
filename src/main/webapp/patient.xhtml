@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="primefaces">
+<h:head>
+    <title>QueueCare - Patient</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+<h:body styleClass="app-body">
+    <div class="page-shell">
+        <div class="hero-card">
+            <div>
+                <h1>Espace patient</h1>
+                <p>Prends un ticket et suis ton passage en temps reel.</p>
+            </div>
+            <div class="action-row">
+                <p:button value="Accueil" outcome="index.xhtml" styleClass="secondary-button"/>
+                <h:form>
+                    <p:commandButton value="Deconnexion" action="#{patientBean.logout}" icon="pi pi-sign-out"/>
+                </h:form>
+            </div>
+        </div>
+
+        <h:form id="patientForm">
+            <p:growl id="messages" showDetail="true" life="4000"/>
+
+            <p:poll interval="10"
+                    listener="#{patientBean.refreshTicket}"
+                    update="patientForm"
+                    autoStart="#{patientBean.loggedIn}"/>
+
+            <p:panel header="Mon ticket" styleClass="content-panel">
+                <div class="grid-two">
+                    <div class="field-block">
+                        <label for="cabinet">Cabinet</label>
+                        <p:selectOneMenu id="cabinet" value="#{patientBean.selectedCabinet}" styleClass="full-width">
+                            <f:selectItems value="#{patientBean.cabinets}" var="cabinet"
+                                           itemLabel="#{cabinet.name}" itemValue="#{cabinet.name}"/>
+                            <p:ajax listener="#{patientBean.onCabinetChange}" update="patientForm"/>
+                        </p:selectOneMenu>
+                    </div>
+
+                    <div class="field-block">
+                        <label>Patient connecte</label>
+                        <p:inputText value="#{patientBean.patientName}" readonly="true" styleClass="full-width"/>
+                    </div>
+                </div>
+
+                <div class="action-row">
+                    <p:commandButton value="Prendre un ticket"
+                                     action="#{patientBean.takeTicket}"
+                                     update="patientForm"
+                                     icon="pi pi-ticket"/>
+                    <p:commandButton value="Actualiser"
+                                     actionListener="#{patientBean.refreshTicket}"
+                                     update="patientForm"
+                                     icon="pi pi-refresh"
+                                     styleClass="secondary-button"/>
+                </div>
+
+                <h:panelGroup rendered="#{not empty patientBean.activeTicket}">
+                    <div class="ticket-grid">
+                        <div class="ticket-box">
+                            <span class="ticket-label">Ton numero</span>
+                            <strong>#{patientBean.activeTicket.number}</strong>
+                        </div>
+                        <div class="ticket-box">
+                            <span class="ticket-label">Patients avant toi</span>
+                            <strong>#{patientBean.activeTicket.patientsAhead}</strong>
+                        </div>
+                        <div class="ticket-box">
+                            <span class="ticket-label">Heure de creation</span>
+                            <strong>#{patientBean.activeTicket.formattedCreatedAt}</strong>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <div class="status-card">
+                    <span class="ticket-label">Statut</span>
+                    <strong>#{patientBean.statusMessage}</strong>
+                </div>
+            </p:panel>
+        </h:form>
+    </div>
+</h:body>
+</html>

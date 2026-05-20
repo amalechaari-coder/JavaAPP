@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="primefaces">
+<h:head>
+    <title>QueueCare - Accueil</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+<h:body styleClass="app-body">
+    <div class="page-shell">
+        <div class="hero-card">
+            <div>
+                <h1>Application de gestion des files d'attente</h1>
+                <p>Projet academique simple en JSF, PrimeFaces et MySQL.</p>
+            </div>
+            <p:button value="Acces admin" outcome="admin.xhtml" styleClass="secondary-button"/>
+        </div>
+
+        <h:form id="homeForm">
+            <p:growl id="messages" showDetail="true" life="4000"/>
+
+            <p:panel header="Espace patient" styleClass="content-panel">
+                <div class="grid-two">
+                    <div class="field-block">
+                        <label for="cabinet">Cabinet</label>
+                        <p:selectOneMenu id="cabinet" value="#{patientBean.selectedCabinet}" styleClass="full-width">
+                            <f:selectItems value="#{patientBean.cabinets}" var="cabinet"
+                                           itemLabel="#{cabinet.name}" itemValue="#{cabinet.name}"/>
+                        </p:selectOneMenu>
+                    </div>
+
+                    <div class="field-block">
+                        <label for="name">Nom du patient</label>
+                        <p:inputText id="name" value="#{patientBean.patientName}" styleClass="full-width"/>
+                    </div>
+
+                    <div class="field-block">
+                        <label for="password">Mot de passe</label>
+                        <p:password id="password" value="#{patientBean.password}" feedback="false" styleClass="full-width"/>
+                    </div>
+                </div>
+
+                <div class="action-row">
+                    <p:commandButton value="Se connecter"
+                                     action="#{patientBean.login}"
+                                     update="homeForm"
+                                     icon="pi pi-sign-in"/>
+                    <p:commandButton value="S'inscrire"
+                                     action="#{patientBean.register}"
+                                     update="homeForm"
+                                     icon="pi pi-user-plus"
+                                     styleClass="secondary-button"/>
+                </div>
+            </p:panel>
+        </h:form>
+    </div>
+</h:body>
+</html>
